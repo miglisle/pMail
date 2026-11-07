@@ -2,6 +2,8 @@
 
 **pMail** is a webmail client modeled on the *classic* Gmail interface (roughly 2013–2018): the light-gray top bar, the red **COMPOSE** button, label navigation with the chat roster underneath, inbox tabs, the yellow notification bar, docked compose windows, and the gear menu.
 
+**▶ Live demo: https://miglisle.github.io/pMail/**
+
 ![pMail inbox](docs/screenshot.png)
 
 It runs entirely in your browser. There's no server, no build step and no dependencies. A demo mailbox of about 200 messages loads on first run, and everything you do (send, label, archive, filter, settings) is saved to `localStorage`.
