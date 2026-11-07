@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>pMail</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="pMail — a classic-style webmail client that runs entirely in your browser.">
+<meta name="color-scheme" content="light">
+<link id="favicon" rel="icon" type="image/svg+xml" href="img/favicon.svg">
+<link rel="stylesheet" href="css/pmail.css">
+</head>
+<body class="density-comfortable theme-light">
+
+<div id="loading" role="status" aria-live="polite">
+  <div class="ld-in">
+    <svg class="ld-env" viewBox="0 0 32 32" width="96" height="96" aria-hidden="true"><rect x="1.5" y="6" width="29" height="21" rx="2.5" fill="#fff" stroke="#c9c9c9" stroke-width="1.4"/><path d="M3 8.5l13 10 13-10" fill="none" stroke="#dd4b39" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <div class="ld-text">Loading <span id="loading-user"></span>&hellip;</div>
+    <div id="loading-bar"><span></span></div>
+    <div class="ld-basic">pMail runs entirely in your browser</div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header id="gb">
+    <a class="gb-logo" href="#inbox" aria-label="pMail Inbox"><svg class="pm-logo" height="31" viewBox="0 0 116 34" role="img" aria-label="pMail"><g transform="translate(1 5)"><rect x="0.75" y="0.75" width="32.5" height="23.5" rx="2.5" fill="#fff" stroke="#c9c9c9" stroke-width="1.5"/><path d="M2 3l15 11.5L32 3" fill="none" stroke="#dd4b39" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g><text x="41" y="25" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="bold" letter-spacing="-.5"><tspan class="lg-p" fill="#dd4b39">p</tspan><tspan class="lg-m" fill="#666">Mail</tspan></text></svg></a>
+    <form id="search-form" role="search" autocomplete="off">
+      <div class="sb">
+        <input id="q" type="text" aria-label="Search" spellcheck="false" autocomplete="off">
+        <button type="button" id="search-opts" aria-label="Show search options" data-tip="Show search options"><span class="caret"></span></button>
+      </div>
+      <button type="submit" class="jb jb-blue sb-go" aria-label="Search pMail" data-tip="Search">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </button>
+    </form>
+    <div class="gb-right">
+      <a href="#" id="gb-name" onclick="return false">+Pat</a>
+      <button class="gb-ic" id="gb-apps" aria-label="Apps" data-tip="Apps"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></button>
+      <button class="gb-ic" id="gb-notif" aria-label="Notifications" data-tip="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></button>
+      <button class="gb-av" id="gb-account" aria-label="Account"></button>
+    </div>
+  </header>
+
+  <div id="subbar">
+    <div class="sub-l"><button id="product-switch" aria-haspopup="true"><span class="ps-name">pMail</span><span class="caret"></span></button></div>
+    <div id="toolbar" role="toolbar" aria-label="Actions"></div>
+    <div id="toolbar-right"></div>
+  </div>
+
+  <div id="main">
+    <nav id="nav" aria-label="Labels">
+      <div class="nav-compose"><button id="compose-btn" class="jb jb-red">COMPOSE</button></div>
+      <div id="nav-labels"></div>
+      <div id="roster" aria-label="Chat"></div>
+    </nav>
+    <main id="content" tabindex="-1"></main>
+  </div>
+</div>
+
+<div id="dock" aria-label="Compose windows"></div>
+<div id="notify" role="status" aria-live="polite" hidden></div>
+<div id="tooltip" role="tooltip" hidden></div>
+
+<script src="js/util.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/seed.js"></script>
+<script src="js/store.js"></script>
+<script src="js/search.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/attachments.js"></script>
+<script src="js/themes.js"></script>
+<script src="js/app.js"></script>
+<script src="js/list.js"></script>
+<script src="js/thread.js"></script>
+<script src="js/compose.js"></script>
+<script src="js/searchui.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/contacts.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/shortcuts.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
