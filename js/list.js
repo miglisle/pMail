@@ -83,7 +83,7 @@
     const snippet = s.snippets && t.snippet ? `<span class="snip"> - ${U.esc(t.snippet)}</span>` : '';
     return `<div class="tr${t.unread ? ' un' : ' rd'}${sel ? ' sel' : ''}${idx === app.cursor ? ' kf' : ''}" data-tid="${t.id}" data-i="${idx}" draggable="true" role="row">
       <div class="td c-drag" aria-hidden="true"></div>
-      <div class="td c-chk">${UI.checkbox(sel)}</div>
+      <div class="td c-chk">${UI.checkbox(sel, app.justChecked === t.id)}</div>
       <div class="td c-star" data-tip="${t.starred ? 'Starred' : 'Not starred'}">${PM.starIcon(t.starred)}</div>
       ${s.importanceMarkers ? `<div class="td c-imp" data-tip="${t.important ? 'Click to teach pMail this conversation is not important.' : 'Click to teach pMail this conversation is important.'}">${PM.impIcon(t.important)}</div>` : ''}
       ${s.levelIndicators ? `<div class="td c-lvl">${lvl}</div>` : ''}
@@ -161,6 +161,7 @@
     parts.push(PM.app.footer());
     el.className = 'view-list';
     el.innerHTML = parts.join('');
+    app.justChecked = null;
   };
 
   function emptyState(view) {
@@ -219,6 +220,7 @@
           const on = !app.sel.has(key);
           for (let i = a; i <= b; i++) { const k = app.page[i] && app.page[i].id; if (k) on ? app.sel.add(k) : app.sel.delete(k); }
         } else if (app.sel.has(key)) app.sel.delete(key); else app.sel.add(key);
+        app.justChecked = key;
         app.lastClicked = idx;
         app.cursor = idx;
         PM.app.schedule();

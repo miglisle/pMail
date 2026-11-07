@@ -182,11 +182,13 @@
       l.action && l.action();
     }));
     bar.hidden = false;
+    document.body.classList.add('has-snack');
     PM.app && (PM.app.lastUndo = o.undo || null);
     if (o.sticky) return;
-    nTimer = setTimeout(UI.hideNotify, o.timeout || (links.length ? 20000 : 8000));
+    const mob = document.body.classList.contains('m');
+    nTimer = setTimeout(UI.hideNotify, o.timeout || (mob ? (links.length ? 7000 : 4000) : links.length ? 20000 : 8000));
   };
-  UI.hideNotify = () => { clearTimeout(nTimer); const b = U.$('#notify'); if (b) b.hidden = true; };
+  UI.hideNotify = () => { clearTimeout(nTimer); const b = U.$('#notify'); if (b) b.hidden = true; document.body.classList.remove('has-snack'); };
 
   UI.loading = (on) => { if (on) UI.notify('Loading...', { sticky: true }); else UI.hideNotify(); };
 
@@ -194,7 +196,7 @@
   let tipTimer = null, tipEl = null, tipFor = null;
   function showTip(target) {
     const text = target.getAttribute('data-tip');
-    if (!text) return;
+    if (!text || document.body.classList.contains('m')) return;
     tipEl = tipEl || document.getElementById('tooltip');
     tipEl.innerHTML = `<div class="tt-arrow"></div><div class="tt-text">${U.esc(text)}</div>`;
     tipEl.hidden = false;
@@ -224,7 +226,7 @@
   UI.hideTip = hideTip;
 
   /* ---------- Small builders ---------- */
-  UI.checkbox = (state) => `<span class="cb${state === true ? ' on' : state === 'some' ? ' some' : ''}" role="checkbox" aria-checked="${state === true}"></span>`;
+  UI.checkbox = (state, anim) => `<span class="cb${state === true ? ' on' : state === 'some' ? ' some' : ''}${anim ? ' anim' : ''}" role="checkbox" aria-checked="${state === true}"></span>`;
   UI.btn = (o) => `<button class="jb${o.cls ? ' ' + o.cls : ''}" ${o.id ? `id="${o.id}"` : ''} data-act="${o.act || ''}" ${o.tip ? `data-tip="${U.esc(o.tip)}"` : ''} aria-label="${U.esc(o.tip || o.label || '')}">${o.html || U.esc(o.label || '')}${o.caret ? '<span class="caret"></span>' : ''}</button>`;
 
   /* Default "no photo" silhouette, or the user's own picture */

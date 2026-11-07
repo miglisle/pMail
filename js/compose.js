@@ -56,11 +56,14 @@
           <button class="cw-hbtn" data-c="min" aria-label="Minimize" data-tip="Minimize">${PM.icon('minimize', 14)}</button>
           <button class="cw-hbtn" data-c="max" aria-label="Full-screen" data-tip="Full-screen">${PM.icon('expand', 14)}</button>
           <button class="cw-hbtn" data-c="close" aria-label="Save &amp; close" data-tip="Save &amp; close">${PM.icon('close', 14)}</button></span></div>`}
+        ${this.inline ? '' : `<div class="cw-mhead"><button class="m-ib" data-c="close" aria-label="Back">${PM.icon('back', 24)}</button><span class="cw-mtitle">Compose</span>
+          <button class="m-ib" data-c="attach" aria-label="Attach file">${PM.icon('attach', 24, 'm-rot')}</button><button class="m-ib" data-c="send" aria-label="Send">${PM.icon('send', 24)}</button><button class="m-ib" data-c="opts" aria-label="More options">${PM.icon('moreVert', 24)}</button></div>`}
         <div class="cw-main">
           ${this.inline ? `<div class="cw-iav">${UI.avatar(me, 40)}</div>` : ''}
           <div class="cw-box">
             ${this.inline ? `<div class="cw-ihead"><button class="jb cw-kind" data-c="kind" aria-label="Type of response" tabindex="-1"><span class="cw-kind-ic"></span><span class="caret"></span></button><span class="cw-irec" data-c="expandRec"></span><button class="cw-pop" data-c="popout" data-tip="Pop out reply" aria-label="Pop out reply" tabindex="-1">${PM.icon('newWindow', 16)}</button></div>` : ''}
             <div class="cw-fields">
+              <div class="cw-row cw-from"><span class="cw-lbl">From</span><span class="cw-fromv">${U.esc(me.email)}</span></div>
               <div class="cw-row cw-to"><span class="cw-lbl">To</span><div class="rcpt" data-f="to"><input class="rcpt-in" type="text" autocomplete="off" spellcheck="false" aria-label="To"></div><span class="cw-ccbcc"><a href="#" data-c="showcc" tabindex="-1">Cc</a><a href="#" data-c="showbcc" tabindex="-1">Bcc</a></span></div>
               <div class="cw-row cw-cc" hidden><span class="cw-lbl">Cc</span><div class="rcpt" data-f="cc"><input class="rcpt-in" type="text" autocomplete="off" spellcheck="false" aria-label="Cc"></div></div>
               <div class="cw-row cw-bcc" hidden><span class="cw-lbl">Bcc</span><div class="rcpt" data-f="bcc"><input class="rcpt-in" type="text" autocomplete="off" spellcheck="false" aria-label="Bcc"></div></div>
@@ -259,6 +262,8 @@
       const dock = U.$('#dock');
       dock.appendChild(this.el);
       this.applyState();
+      this.el.classList.add('cw-enter');
+      setTimeout(() => this.el.classList.remove('cw-enter'), 400);
     }
     applyState() {
       const el = this.el;
@@ -301,9 +306,15 @@
     }
     close() {
       this.commitAll();
-      if (this.isEmpty()) { if (this.draftId) S.deleteDraft(this.draftId); }
+      const empty = this.isEmpty();
+      if (empty) { if (this.draftId) S.deleteDraft(this.draftId); }
       else this.saveDraft(!this.draftId);
-      this.destroy();
+      const mobile = PM.mobile && PM.mobile.active && !this.inline;
+      if (mobile) {
+        this.el.classList.add('cw-leave');
+        setTimeout(() => this.destroy(), 220);
+        if (!empty) UI.notify('Message saved as draft.');
+      } else this.destroy();
     }
     discard() {
       const data = this.collect();
@@ -418,7 +429,9 @@
       });
       this.subjEl.addEventListener('input', () => { this.updateTitle(); this.changed(); });
       this.subjEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); this.ed.focus(); } });
-      this.ed.addEventListener('input', () => this.changed());
+      const ph = () => this.ed.classList.toggle('is-empty', !this.ed.textContent.trim() && !this.ed.querySelector('img,li,blockquote'));
+      ph();
+      this.ed.addEventListener('input', () => { ph(); this.changed(); });
       this.ed.addEventListener('paste', (e) => {
         if (this.plain) { e.preventDefault(); document.execCommand('insertText', false, e.clipboardData.getData('text/plain')); return; }
         const html = e.clipboardData && e.clipboardData.getData('text/html');
@@ -584,9 +597,16 @@
 
     optionsMenu(btn) {
       const s = S.settings();
+      const mob = PM.mobile && PM.mobile.active;
       UI.menu(btn, [
-        this.inline ? null : { label: 'Default to full-screen', checked: s.composeFullscreen, action: () => S.setSettings({ composeFullscreen: !s.composeFullscreen }) },
-        this.inline ? null : { sep: true },
+        mob ? { label: 'Insert photo', action: () => this.command('photo') } : null,
+        mob ? { label: 'Insert link', action: () => this.insertLink() } : null,
+        mob ? { label: 'Insert emoji', action: () => this.emojiPicker(btn) } : null,
+        mob ? { label: 'Formatting options', action: () => this.command('fmt', U.$('.cw-fmtbtn', this.el)) } : null,
+        mob ? { label: 'Discard', action: () => this.discard() } : null,
+        mob ? { sep: true } : null,
+        this.inline || mob ? null : { label: 'Default to full-screen', checked: s.composeFullscreen, action: () => S.setSettings({ composeFullscreen: !s.composeFullscreen }) },
+        this.inline || mob ? null : { sep: true },
         { label: 'Plain text mode', checked: this.plain, action: () => this.togglePlain() },
         { sep: true },
         { label: 'Print', action: () => this.print() },
@@ -751,7 +771,7 @@
       quote: kind === 'forward' ? '' : quoteBlock(m),
       attachments: kind === 'forward' ? m.attachments.map((a) => ({ ...a })) : [],
     };
-    if (o.inline && PM.app.route.mode === 'thread') {
+    if (o.inline && PM.app.route.mode === 'thread' && !(PM.mobile && PM.mobile.active)) {
       const c = new Compose({ ...data, inline: true });
       C.list.push(c);
       PM.app.render(false);

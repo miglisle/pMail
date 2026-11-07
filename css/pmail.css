@@ -843,3 +843,56 @@ body.theme-dark .ro-c .dot, body.theme-contrast .ro-c .dot { border-color: #2b2b
   #gb, #subbar, #nav, #dock, #notify, .reply-box, .th-icons, .msg-r .jb-grp { display: none !important; }
   body, #app, #main, #content { overflow: visible; height: auto; display: block; }
 }
+
+/* =====================================================================
+   Motion — classic timings (button fades .218s, popups/tooltips .13s)
+   ===================================================================== */
+.jb { transition: background-color .218s, background-image .218s, border-color .218s, box-shadow .218s, color .218s; }
+.jb:hover, .jb:active, .jb.active { transition: none; }
+.gb-ic, .ib, .cw-tool, .cw-hbtn, .ro-foot button, .ro-new, .cw-pop, .vw-btn { transition: opacity .218s, background-color .218s; }
+.gb-ic:hover, .ib:hover, .cw-tool:hover, .cw-hbtn:hover { transition: none; }
+.ji, .sb, .ro-search input { transition: border-color .218s, box-shadow .218s; }
+.ji:focus, #search-form.focus .sb { transition: none; }
+.cb { transition: border-color .218s, box-shadow .218s; }
+.cb.anim.on::after { animation: pm-check .22s cubic-bezier(.4, 0, .2, 1); }
+@keyframes pm-check { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+.pm-popup { animation: pm-pop .13s ease-out; }
+@keyframes pm-pop { from { opacity: 0; transform: translateY(-3px); } }
+#search-sug, #adv { animation: pm-fade .13s ease-out; }
+#tooltip:not([hidden]) > * { animation: pm-fade .13s ease-out; }
+.nb { animation: pm-nb .18s ease-out; }
+@keyframes pm-nb { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes pm-fade { from { opacity: 0; } }
+.dlg-overlay { animation: pm-overlay .18s ease-out; }
+@keyframes pm-overlay { from { opacity: 0; } }
+.dlg { animation: pm-dlg .18s ease-out; }
+@keyframes pm-dlg { from { opacity: 0; transform: translate(-50%, -50%) scale(.95); } }
+#kbd-help { animation: pm-fade .2s ease-out; }
+#kbd-help .kh-in { animation: pm-dlg-in .2s ease-out; }
+@keyframes pm-dlg-in { from { transform: scale(.97); } }
+#loading { transition: opacity .3s ease; }
+#loading.done { opacity: 0; pointer-events: none; }
+.viewer { animation: pm-fade .2s ease-out; }
+.vw-img { animation: pm-zoom .25s cubic-bezier(.4, 0, .2, 1); }
+@keyframes pm-zoom { from { opacity: 0; transform: scale(.92); } }
+#signout { animation: pm-fade .25s ease-out; }
+
+/* compose / chat / tasks windows slide up from the bottom of the screen */
+.cw:not(.cw-inline) { transition: height .18s cubic-bezier(.4, 0, .2, 1), width .18s cubic-bezier(.4, 0, .2, 1); }
+.cw.cw-enter:not(.max), .chw, .tw { animation: pm-up .22s cubic-bezier(.4, 0, .2, 1); }
+@keyframes pm-up { from { transform: translateY(100%); } }
+.cw.max { transition: none; animation: pm-max .2s cubic-bezier(.4, 0, .2, 1); }
+@keyframes pm-max { from { opacity: 0; transform: translate(-50%, -47%) scale(.97); } }
+#cw-overlay { animation: pm-fade .2s ease-out; }
+.cw.cw-inline { animation: pm-fade .15s ease-out; }
+
+/* attachment hover overlay fades instead of popping */
+.att-hover { display: flex; opacity: 0; pointer-events: none; transition: opacity .13s ease; }
+.att:hover .att-hover { opacity: 1; pointer-events: auto; }
+
+.foot-view { width: 100%; text-align: center; padding: 0 16px 24px; color: #666; font-size: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

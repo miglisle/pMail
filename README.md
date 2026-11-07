@@ -6,6 +6,8 @@
 
 ![pMail inbox](docs/screenshot.png)
 
+<img src="docs/screenshot-mobile.png" alt="pMail on a phone" width="280">
+
 It runs entirely in your browser. There's no server, no build step and no dependencies. A demo mailbox of about 200 messages loads on first run, and everything you do (send, label, archive, filter, settings) is saved to `localStorage`.
 
 > pMail is an independent project. It isn't affiliated with or endorsed by Google, and it uses its own name, logo and demo data. Every person, company and email address in the demo mailbox is fictional.
@@ -61,6 +63,27 @@ It works as-is on GitHub Pages or any static host.
 - Print / open-in-new-window view of a conversation
 - Account menu, apps grid and sign-out screen
 
+## Mobile
+
+On screens 760px wide or narrower, pMail switches to a phone layout modeled on the mobile web version of webmail:
+
+- A rounded "Search in mail" bar with the menu button and your avatar
+- A slide-out navigation drawer
+- Letter avatars that flip to a checkmark when you tap them (long-press works too)
+- A selection bar with archive, delete, mark read/unread and more
+- Swipe left or right to archive (or move to Trash outside the inbox)
+- Social/Promotions summary rows at the top of Primary
+- Infinite scrolling, and a Compose button that shrinks while you scroll
+- Full-screen conversations with Reply / Reply all / Forward buttons
+- Full-screen compose that slides up, plus bottom snackbars with UNDO
+- A compact mobile Settings page
+
+"pMail view: mobile | desktop" at the bottom of the list (and in the drawer) switches between the two layouts on a phone.
+
+## Animations
+
+The desktop view keeps the classic motion: buttons fade their hover state out over 0.218s, menus, tooltips and popups fade in over 0.13s, compose/chat/tasks windows slide up from the bottom, minimizing animates the window size, checkboxes draw their checkmark, dialogs and full-screen compose scale in, and the loading screen fades away. On mobile, pages slide in, the drawer and snackbars slide, avatars flip, stars pop and swiped rows collapse. Everything respects your system's "reduce motion" setting.
+
 ## Keyboard shortcuts
 
 Shortcuts are on by default. Press `?` to see them all.
@@ -82,7 +105,8 @@ Shortcuts are on by default. Press `?` to see them all.
 
 ```
 index.html          app shell
-css/pmail.css       all styles (classic look, themes, densities)
+css/pmail.css       desktop styles (classic look, themes, densities, motion)
+css/mobile.css      phone layout styles
 js/util.js          helpers (escaping, sanitizing, dates, storage, event bus)
 js/icons.js         SVG icons and the pMail logo
 js/seed.js          demo mailbox (fictional people and companies)
@@ -101,6 +125,7 @@ js/tasks.js         tasks window
 js/shortcuts.js     keyboard shortcuts
 js/attachments.js   attachment viewer and generated demo files
 js/themes.js        themes
+js/mobile.js        phone layout (drawer, swipe, selection, full-screen views)
 js/main.js          boot and simulated incoming mail
 ```
 

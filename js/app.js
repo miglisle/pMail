@@ -114,6 +114,7 @@
   A.render = function (routeChanged) {
     if (!A.route) return;
     applyBodyClasses();
+    if (PM.mobile && PM.mobile.active) { PM.mobile.render(A.route, routeChanged); updateTitle(); return; }
     renderNav();
     const content = U.$('#content');
     const keep = content.scrollTop;
@@ -804,6 +805,7 @@
     const el = U.h(`<div class="jm lm" tabindex="-1"><div class="lm-title">Label as:</div><div class="lm-sw"><input class="ji lm-q" type="text" aria-label="Search labels">${PM.icon('search', 16)}</div><div class="lm-list"></div><div class="jm-sep"></div><div class="lm-foot"></div></div>`);
     const list = U.$('.lm-list', el), q = U.$('.lm-q', el), foot = U.$('.lm-foot', el);
     const dirty = () => labels.some((l) => cur[l.id] !== init[l.id]);
+    let toggled = null;
     const apply = () => {
       UI.closePopup();
       const all = S.msgsFor(keys, scope);
@@ -827,7 +829,7 @@
     const draw = () => {
       const f = q.value.trim().toLowerCase();
       list.innerHTML = labels.filter((l) => !f || l.name.toLowerCase().includes(f))
-        .map((l) => `<div class="jm-item lm-row" data-id="${l.id}">${UI.checkbox(cur[l.id])}<span class="lm-name">${U.esc(l.name)}</span></div>`).join('') +
+        .map((l) => `<div class="jm-item lm-row" data-id="${l.id}">${UI.checkbox(cur[l.id], l.id === toggled)}<span class="lm-name">${U.esc(l.name)}</span></div>`).join('') +
         (f && !S.labelByName(f) ? `<div class="jm-item lm-new"><span class="jm-check"></span>"${U.esc(q.value.trim())}" (create new)</div>` : '');
       foot.innerHTML = (dirty() ? '<div class="jm-item lm-apply"><span class="jm-check"></span><b>Apply</b></div>' : '') +
         '<div class="jm-item lm-create"><span class="jm-check"></span>Create new</div><div class="jm-item lm-manage"><span class="jm-check"></span>Manage labels</div>';
@@ -842,7 +844,9 @@
       if (!row) return;
       const id = row.dataset.id;
       cur[id] = cur[id] === true ? false : true;
+      toggled = id;
       draw();
+      toggled = null;
     });
     foot.addEventListener('click', (e) => {
       if (e.target.closest('.lm-apply')) apply();
@@ -932,9 +936,11 @@
     return `<div class="foot">
       <div class="foot-l">${gb.toFixed(2)} GB (${pct}%) of 15 GB used<br><a href="#settings/accounts">Manage</a></div>
       <div class="foot-m"><a href="#" data-foot="terms">Terms</a> - <a href="#" data-foot="privacy">Privacy</a> - <a href="#" data-foot="policies">Program Policies</a></div>
-      <div class="foot-r">Last account activity: ${U.ago(S.raw().lastActivity)}<br><a href="#" data-foot="details">Details</a></div></div>`;
+      <div class="foot-r">Last account activity: ${U.ago(S.raw().lastActivity)}<br><a href="#" data-foot="details">Details</a></div></div>
+      ${PM.mobile && PM.mobile.small() ? '<div class="foot-view">pMail view: <b>desktop</b> | <a href="#" data-foot="mobile">mobile</a></div>' : ''}`;
   };
   A.footerClick = function (k) {
+    if (k === 'mobile') { PM.mobile.setView('mobile'); return; }
     if (k === 'details') {
       const now = Date.now();
       UI.dialog({ title: 'Activity on this account', width: 560, body: `<div class="act-info"><p>This feature provides information about the last activity on this mail account and any concurrent activity.</p>
@@ -961,6 +967,7 @@
     PM.bus.on('change', () => A.schedule());
     PM.bus.on('storage-full', () => UI.notify('pMail couldn\'t save everything: this browser\'s storage is full. Try removing large attachments.'));
     window.addEventListener('hashchange', A.onRoute);
+    PM.mobile.init();
     A.onRoute();
     PM.mailer.start();
     setInterval(() => { if (A.route && A.route.mode === 'list') A.schedule(); }, 60000);

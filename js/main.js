@@ -43,7 +43,8 @@
       bar.style.width = '100%';
       U.$('#app').hidden = false;
       PM.app.init();
-      setTimeout(() => loading.remove(), 120);
+      loading.classList.add('done');
+      setTimeout(() => loading.remove(), 320);
     }, 520);
   }
   // Keep tabs in sync if pMail is open in two windows
